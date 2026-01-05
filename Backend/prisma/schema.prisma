@@ -1,0 +1,162 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "./generated/prisma/client"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Company {
+  id      String  @id @default(cuid())
+  slug    String  @unique
+  name    String
+  website String?
+  email   String?
+
+  // Branding
+  logoUrl        String? @map("logo_url")
+  bannerUrl      String? @map("banner_url")
+  primaryColor   String  @default("#3B82F6") @map("primary_color")
+  secondaryColor String  @default("#1E40AF") @map("secondary_color")
+  fontFamily     String  @default("Inter") @map("font_family")
+
+  // SEO
+  metaTitle       String? @map("meta_title")
+  metaDescription String? @map("meta_description")
+  faviconUrl      String? @map("favicon_url")
+
+  // Status
+  isActive    Boolean   @default(true) @map("is_active")
+  publishedAt DateTime? @map("published_at")
+
+  // Relations
+  sections        Section[]
+  jobs            Job[]
+  users           User[]
+  analyticsEvents AnalyticsEvent[]
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@index([slug])
+  @@index([isActive])
+  @@map("companies")
+}
+
+model Section {
+  id        String  @id @default(cuid())
+  companyId String  @map("company_id")
+  company   Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
+
+  type       String
+  title      String?
+  orderIndex Int     @default(0) @map("order_index")
+  isVisible  Boolean @default(true) @map("is_visible")
+
+  content Json @default("{}")
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@index([companyId, orderIndex])
+  @@index([companyId, isVisible])
+  @@map("sections")
+}
+
+model Job {
+  id        String  @id @default(cuid())
+  companyId String  @map("company_id")
+  company   Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
+
+  slug        String @unique // SEO-friendly URL slug
+  title       String
+  description String @db.Text
+
+  department   String
+  location     String
+  locationType String @map("location_type") // remote, onsite, hybrid
+  jobType      String @map("job_type") // full-time, part-time, contract
+  contractType String @map("contract_type") // temporary, permanent, internship
+  seniority    String
+
+  salaryMin      Int?   @map("salary_min")
+  salaryMax      Int?   @map("salary_max")
+  salaryCurrency String @default("USD") @map("salary_currency")
+
+  requirements     String[]
+  responsibilities String[]
+  niceToHave       String[] @map("nice_to_have")
+
+  applicationUrl String? @map("application_url")
+
+  isActive       Boolean @default(true) @map("is_active")
+  viewCount      Int     @default(0) @map("view_count")
+  applicantCount Int     @default(0) @map("applicant_count")
+
+  postedAt  DateTime  @default(now()) @map("posted_at")
+  expiresAt DateTime? @map("expires_at")
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @updatedAt @map("updated_at")
+
+  analyticsEvents AnalyticsEvent[]
+
+  @@index([companyId, isActive])
+  @@index([locationType])
+  @@index([jobType])
+  @@index([contractType])
+  @@index([department])
+  @@index([slug])
+  @@index([postedAt(sort: Desc)])
+  @@map("jobs")
+}
+
+model User {
+  id           String @id @default(cuid())
+  email        String @unique
+  name         String
+  passwordHash String @map("password_hash")
+
+  companyId String  @map("company_id")
+  company   Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  role      String  @default("recruiter")
+
+  isActive    Boolean   @default(true) @map("is_active")
+  lastLoginAt DateTime? @map("last_login_at")
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@index([email])
+  @@index([companyId])
+  @@map("users")
+}
+
+model AnalyticsEvent {
+  id        String  @id @default(cuid())
+  companyId String  @map("company_id")
+  company   Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  jobId     String? @map("job_id")
+  job       Job?    @relation(fields: [jobId], references: [id], onDelete: Cascade)
+
+  eventType String @map("event_type")
+
+  userAgent String? @map("user_agent")
+  ipAddress String? @map("ip_address")
+  referrer  String?
+
+  metadata Json @default("{}")
+
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@index([companyId, createdAt(sort: Desc)])
+  @@index([jobId, createdAt(sort: Desc)])
+  @@index([eventType, createdAt(sort: Desc)])
+  @@map("analytics_events")
+}

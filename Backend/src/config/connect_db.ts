@@ -1,0 +1,18 @@
+import "dotenv/config";
+import { PrismaPg } from '@prisma/adapter-pg';
+import { PrismaClient } from '../../prisma/generated/prisma/client';
+import { Pool } from 'pg';
+
+const connectionString = `${process.env.DATABASE_URL}`;
+
+const pool = new Pool({ connectionString });
+const adapter = new PrismaPg(pool);
+const prisma = new PrismaClient({ adapter });
+
+// Graceful shutdown
+process.on('beforeExit', async () => {
+    await prisma.$disconnect();
+    await pool.end();
+});
+
+export { prisma };
