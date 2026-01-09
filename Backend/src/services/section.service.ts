@@ -5,6 +5,7 @@ export class SectionService {
     static async create(companyId: string, data: {
         type: string;
         title?: string;
+        subtitle?: string;
         content: any;
         orderIndex?: number;
     }) {
@@ -19,6 +20,7 @@ export class SectionService {
                 companyId,
                 type: data.type,
                 title: data.title,
+                subtitle: data.subtitle,
                 content: data.content,
                 orderIndex: data.orderIndex ?? (maxOrder._max.orderIndex ?? 0) + 1,
             },
@@ -32,6 +34,7 @@ export class SectionService {
         companyId: string,
         data: {
             title?: string;
+            subtitle?: string;
             content?: any;
             isVisible?: boolean;
         }

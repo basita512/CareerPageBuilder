@@ -10,6 +10,10 @@ export class CompanyService {
                     where: { isVisible: true },
                     orderBy: { orderIndex: 'asc' },
                 },
+                jobs: {
+                    where: { isActive: true },
+                    orderBy: { postedAt: 'desc' },
+                },
             },
         });
 
@@ -32,6 +36,10 @@ export class CompanyService {
                         jobs: { where: { isActive: true } },
                     },
                 },
+                jobs: {
+                    where: { isActive: true },
+                    orderBy: { postedAt: 'desc' },
+                },
             },
         });
 
@@ -43,16 +51,25 @@ export class CompanyService {
     }
 
     static async updateBranding(companyId: string, data: {
+        companyName?: string;
+        website?: string;
         logoUrl?: string;
         bannerUrl?: string;
-        primaryColor?: string;
-        secondaryColor?: string;
+        colors?: Record<string, string>;
         fontFamily?: string;
+        themeMode?: 'light' | 'dark';
     }) {
+        const { companyName, ...rest } = data;
+        const updateData: any = { ...rest };
+
+        if (companyName) {
+            updateData.name = companyName;
+        }
+
         const company = await prisma.company.update({
             where: { id: companyId },
             data: {
-                ...data,
+                ...updateData,
                 updatedAt: new Date(),
             },
         });

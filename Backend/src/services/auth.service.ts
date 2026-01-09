@@ -75,13 +75,13 @@ export class AuthService {
         });
 
         if (!user) {
-            throw new ApiError(401, 'Invalid credentials');
+            throw new ApiError(401, 'User does not exist');
         }
 
         const isPasswordValid = await bcrypt.compare(password, user.passwordHash);
 
         if (!isPasswordValid) {
-            throw new ApiError(401, 'Invalid credentials');
+            throw new ApiError(401, 'Invalid password');
         }
 
         if (!user.isActive) {
@@ -159,7 +159,7 @@ export class AuthService {
         const isPasswordValid = await bcrypt.compare(currentPassword, user.passwordHash);
 
         if (!isPasswordValid) {
-            throw new ApiError(401, 'Current password is incorrect');
+            throw new ApiError(400, 'Current password is incorrect');
         }
 
         const newPasswordHash = await bcrypt.hash(newPassword, 10);
