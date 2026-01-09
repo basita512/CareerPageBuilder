@@ -11,12 +11,23 @@ cloudinary.config({
 });
 
 export class UploadController {
+    // Helper to handle stream upload
+    private static uploadToCloudinary(file: Express.Multer.File, options: any): Promise<any> {
+        return new Promise((resolve, reject) => {
+            const uploadStream = cloudinary.uploader.upload_stream(options, (error, result) => {
+                if (error) return reject(new ApiError(500, 'Cloudinary upload failed'));
+                resolve(result);
+            });
+            uploadStream.end(file.buffer);
+        });
+    }
+
     static uploadImage = asyncHandler(async (req: Request, res: Response) => {
         if (!req.file) {
             throw new ApiError(400, 'No file provided');
         }
 
-        const result = await cloudinary.uploader.upload(req.file.path, {
+        const result = await UploadController.uploadToCloudinary(req.file, {
             folder: 'careers-builder',
             transformation: [
                 { width: 1920, height: 1080, crop: 'limit' },
@@ -31,11 +42,6 @@ export class UploadController {
                 publicId: result.public_id,
             },
         });
-
-        // Cleanup local file
-        fs.unlink(req.file.path, (err) => {
-            if (err) console.error('Failed to delete local file:', err);
-        });
     });
 
     static uploadVideo = asyncHandler(async (req: Request, res: Response) => {
@@ -43,7 +49,7 @@ export class UploadController {
             throw new ApiError(400, 'No file provided');
         }
 
-        const result = await cloudinary.uploader.upload(req.file.path, {
+        const result = await UploadController.uploadToCloudinary(req.file, {
             folder: 'careers-builder/videos',
             resource_type: 'video',
         });
@@ -55,11 +61,6 @@ export class UploadController {
                 publicId: result.public_id,
             },
         });
-
-        // Cleanup local file
-        fs.unlink(req.file.path, (err) => {
-            if (err) console.error('Failed to delete local file:', err);
-        });
     });
 
     static uploadResume = asyncHandler(async (req: Request, res: Response) => {
@@ -67,7 +68,7 @@ export class UploadController {
             throw new ApiError(400, 'No file provided');
         }
 
-        const result = await cloudinary.uploader.upload(req.file.path, {
+        const result = await UploadController.uploadToCloudinary(req.file, {
             folder: 'careers-builder/resumes',
             resource_type: 'auto',
             use_filename: true,
@@ -81,11 +82,6 @@ export class UploadController {
                 publicId: result.public_id,
                 originalName: req.file.originalname
             },
-        });
-
-        // Cleanup local file
-        fs.unlink(req.file.path, (err) => {
-            if (err) console.error('Failed to delete local file:', err);
         });
     });
 }
