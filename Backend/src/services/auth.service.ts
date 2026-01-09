@@ -33,7 +33,7 @@ export class AuthService {
         const passwordHash = await bcrypt.hash(data.password, 10);
 
         // Create company and user in transaction
-        const result = await prisma.$transaction(async (tx) => {
+        const result = await prisma.$transaction(async (tx: any) => {
             const company = await tx.company.create({
                 data: {
                     name: data.companyName,
