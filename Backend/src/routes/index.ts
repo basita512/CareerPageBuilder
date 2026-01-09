@@ -4,6 +4,7 @@ import companyRoutes from './company.routes';
 import jobRoutes from './job.routes';
 import sectionRoutes from './section.routes';
 import analyticsRoutes from './analytics.routes';
+import uploadRoutes from './upload.routes';
 import { apiLimiter } from '../middleware/rateLimit.middleware';
 
 const router = Router();
@@ -17,5 +18,6 @@ router.use('/companies', companyRoutes);
 router.use('/jobs', jobRoutes);
 router.use('/sections', sectionRoutes);
 router.use('/analytics', analyticsRoutes);
+router.use('/upload', uploadRoutes);
 
 export default router;
