@@ -23,9 +23,22 @@ app.use(helmet({
         },
     },
 }));
+const allowedOrigins = [process.env.CORS_ORIGIN];
+
 app.use(cors({
-    origin: process.env.CORS_ORIGIN,
+    origin: (origin, callback) => {
+        if (!origin) return callback(null, true);
+
+        if (allowedOrigins.includes(origin) || !process.env.NODE_ENV) {
+            callback(null, true);
+        } else {
+            console.log("Blocked by CORS:", origin);
+            callback(new Error('Not allowed by CORS'));
+        }
+    },
     credentials: true,
+    methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With", "Accept"]
 }));
 
 // Body parsing
@@ -58,7 +71,7 @@ app.use('/api', routes);
 app.use(errorHandler);
 
 // Server startup
-const PORT = process.env.PORT;
+const PORT = process.env.PORT || 5000;
 
 async function startServer() {
     try {
@@ -66,9 +79,12 @@ async function startServer() {
         await prisma.$connect();
         console.log('Database connected');
 
-        app.listen(PORT, () => {
-            console.log(`Server running on port ${PORT}`);
-        });
+        // Only listen if we are running this file directly
+        if (require.main === module) {
+            app.listen(PORT, () => {
+                console.log(`Server running on port ${PORT}`);
+            });
+        }
     } catch (error) {
         console.error('Failed to start server:', error);
         process.exit(1);
@@ -76,6 +92,8 @@ async function startServer() {
 }
 
 startServer();
+
+export default app;
 
 // Graceful shutdown
 process.on('SIGTERM', async () => {
