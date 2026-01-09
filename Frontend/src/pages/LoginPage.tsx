@@ -1,7 +1,7 @@
 import { toast } from "sonner";
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Building2, Mail, Lock, ArrowRight, Eye, EyeOff, AlertCircle } from 'lucide-react';
+import { Building2, Mail, Lock, ArrowRight, Eye, EyeOff, AlertCircle, ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -56,7 +56,17 @@ const LoginPage = () => {
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.5 }}
         >
-          <div className="flex items-center justify-between mb-12">
+          <div className="mb-6">
+            <Link
+              to="/"
+              className="inline-flex items-center text-sm text-muted-foreground hover:text-foreground transition-colors"
+            >
+              <ArrowLeft className="mr-2 h-4 w-4" />
+              Back to Home
+            </Link>
+          </div>
+
+          <div className="flex items-center justify-between mb-8">
             <Link to="/" className="flex items-center gap-2">
               <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary to-accent flex items-center justify-center">
                 <Building2 className="h-5 w-5 text-primary-foreground" />
