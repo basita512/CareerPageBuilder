@@ -9,7 +9,7 @@ export const Footer = ({ company }: FooterProps) => {
   const currentYear = new Date().getFullYear();
 
   return (
-    <footer className="py-12 bg-card border-t border-border">
+    <footer className="py-12 bg-card border-t border-border dark:bg-card/30 dark:backdrop-blur-md transition-colors duration-300">
       <div className="section-container">
         <div className="flex flex-col md:flex-row items-center justify-between gap-6">
           {/* Logo & Company */}
@@ -32,9 +32,9 @@ export const Footer = ({ company }: FooterProps) => {
               Open Positions
             </a>
             {company?.website && (
-              <a 
-                href={company.website} 
-                target="_blank" 
+              <a
+                href={company.website}
+                target="_blank"
                 rel="noopener noreferrer"
                 className="hover:text-foreground transition-colors"
               >

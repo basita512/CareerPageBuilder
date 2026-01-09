@@ -40,11 +40,11 @@ export const TestimonialsSection = ({ section }: TestimonialsSectionProps) => {
               whileHover={{ y: -4 }}
             >
               <Quote className="absolute top-6 right-6 h-8 w-8 text-primary/40" />
-              
+
               <p className="text-lg leading-relaxed mb-6 relative z-10 text-[hsl(40_20%_90%)]">
                 "{testimonial.quote}"
               </p>
-              
+
               <div className="flex items-center gap-4">
                 <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-accent flex items-center justify-center text-lg font-bold text-primary-foreground">
                   {testimonial.author.charAt(0)}

@@ -1,12 +1,12 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Building2, Mail, Lock, User, ArrowRight, Eye, EyeOff } from 'lucide-react';
+import { Building2, Mail, Lock, User, ArrowRight, Eye, EyeOff, AlertCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Link, useNavigate } from 'react-router-dom';
-import { ThemeToggle } from '@/components/ThemeToggle';
-import { toast } from "sonner";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Link, useNavigate, useLocation } from 'react-router-dom';
+import { useAuth } from '@/contexts/AuthContext';
 
 const RegisterPage = () => {
   const [email, setEmail] = useState('');
@@ -15,18 +15,34 @@ const RegisterPage = () => {
   const [companyId, setCompanyId] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState('');
   const navigate = useNavigate();
+  const location = useLocation();
+  const { register, isAuthenticated } = useAuth();
+
+  // Redirect if already authenticated
+  useEffect(() => {
+    if (isAuthenticated) {
+      navigate('/company/edit', { replace: true });
+    }
+  }, [isAuthenticated, navigate]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
-    
-    // Simulate register
-    setTimeout(() => {
+    setError(''); // Clear previous errors
+
+    try {
+      await register(email, password, name, companyId);
+      // Auto-login and redirect handled in AuthContext
+      navigate('/company/edit', { replace: true });
+    } catch (err: any) {
+      // Display error inline instead of toast
+      const message = err.response?.data?.message || 'Registration failed. Please check your information and try again.';
+      setError(message);
+    } finally {
       setIsLoading(false);
-      toast.success('Account created successfully! Please login.');
-      navigate('/login');
-    }, 1000);
+    }
   };
 
   return (
@@ -46,7 +62,6 @@ const RegisterPage = () => {
               </div>
               <span className="font-display font-bold text-xl">CareerBuilder</span>
             </Link>
-            <ThemeToggle />
           </div>
 
           <h1 className="text-3xl font-display font-bold mb-2">Create an account</h1>
@@ -124,6 +139,16 @@ const RegisterPage = () => {
               </div>
               <p className="text-xs text-muted-foreground">Minimum 8 characters</p>
             </div>
+
+            {/* Error Message */}
+            {error && (
+              <div className="animate-in fade-in slide-in-from-top-2 duration-300">
+                <Alert variant="destructive">
+                  <AlertCircle className="h-4 w-4" />
+                  <AlertDescription>{error}</AlertDescription>
+                </Alert>
+              </div>
+            )}
 
             <Button type="submit" className="w-full" size="lg" disabled={isLoading}>
               {isLoading ? 'Creating account...' : 'Create Account'}

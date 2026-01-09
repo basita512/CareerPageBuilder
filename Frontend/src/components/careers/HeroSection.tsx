@@ -26,12 +26,7 @@ export const HeroSection = ({ section, company }: HeroSectionProps) => {
           transition={{ duration: 10, repeat: Infinity, ease: 'easeInOut' }}
         />
         {/* Grid pattern */}
-        <div className="absolute inset-0 opacity-[0.03]" 
-          style={{ 
-            backgroundImage: 'linear-gradient(hsl(var(--foreground)) 1px, transparent 1px), linear-gradient(90deg, hsl(var(--foreground)) 1px, transparent 1px)',
-            backgroundSize: '60px 60px' 
-          }} 
-        />
+        <div className="absolute inset-0 bg-grid-pattern opacity-[0.3]" />
       </div>
 
       <div className="section-container relative z-10 py-20">

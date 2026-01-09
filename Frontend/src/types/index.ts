@@ -13,9 +13,9 @@ export interface Company {
   website?: string;
   logoUrl?: string;
   bannerUrl?: string;
-  primaryColor?: string;
-  secondaryColor?: string;
+  colors?: Record<string, string>;
   fontFamily?: string;
+  themeMode?: 'light' | 'dark';
   metaTitle?: string;
   metaDescription?: string;
   faviconUrl?: string;
@@ -40,7 +40,8 @@ export interface Job {
   };
   description: string;
   requirements?: string[];
-  benefits?: string[];
+  responsibilities?: string[];
+  niceToHave?: string[];
   applyUrl?: string;
   isActive: boolean;
   createdAt: string;
@@ -52,6 +53,7 @@ export interface Section {
   companyId: string;
   type: SectionType;
   title?: string;
+  subtitle?: string; // Optional UI helper, usually stored in content
   content: Record<string, any>;
   orderIndex: number;
   isVisible: boolean;
@@ -76,4 +78,11 @@ export interface AnalyticsOverview {
   totalPageViews: number;
   totalJobViews: number;
   totalApplicationClicks: number;
+}
+
+export interface FilterState {
+  search: string;
+  locations: string[];
+  jobTypes: string[];
+  departments: string[];
 }

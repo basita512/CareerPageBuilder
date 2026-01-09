@@ -5,7 +5,8 @@ import { Job, FilterState } from '@/types';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { getUniqueLocations, getUniqueDepartments, getUniqueJobTypes } from '@/data/sampleData';
+import { getUniqueLocations, getUniqueDepartments, getUniqueJobTypes } from '@/lib/jobHelpers';
+import { SectionHeading } from '@/components/ui/SectionHeading';
 
 interface JobListingsProps {
   jobs: Job[];
@@ -34,32 +35,32 @@ export const JobListings = ({ jobs, onJobClick }: JobListingsProps) => {
   const filteredJobs = useMemo(() => {
     return jobs.filter(job => {
       if (!job.isActive) return false;
-      
+
       // Search filter
       if (filters.search) {
         const searchLower = filters.search.toLowerCase();
         if (!job.title.toLowerCase().includes(searchLower) &&
-            !job.department.toLowerCase().includes(searchLower) &&
-            !job.location.toLowerCase().includes(searchLower)) {
+          !job.department.toLowerCase().includes(searchLower) &&
+          !job.location.toLowerCase().includes(searchLower)) {
           return false;
         }
       }
-      
+
       // Location filter
       if (filters.locations.length > 0 && !filters.locations.includes(job.location)) {
         return false;
       }
-      
+
       // Job type filter
       if (filters.jobTypes.length > 0 && !filters.jobTypes.includes(job.jobType)) {
         return false;
       }
-      
+
       // Department filter
       if (filters.departments.length > 0 && !filters.departments.includes(job.department)) {
         return false;
       }
-      
+
       return true;
     });
   }, [jobs, filters]);
@@ -77,26 +78,17 @@ export const JobListings = ({ jobs, onJobClick }: JobListingsProps) => {
     setFilters({ search: '', locations: [], jobTypes: [], departments: [] });
   };
 
-  const hasActiveFilters = filters.search || filters.locations.length > 0 || 
+  const hasActiveFilters = filters.search || filters.locations.length > 0 ||
     filters.jobTypes.length > 0 || filters.departments.length > 0;
 
   return (
     <section id="jobs" className="py-24 dark-section">
       <div className="section-container">
-        <motion.div
-          className="text-center max-w-3xl mx-auto mb-12"
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
-        >
-          <h2 className="text-4xl sm:text-5xl font-display font-bold mb-4">
-            Open Positions
-          </h2>
-          <p className="text-lg text-muted-foreground">
-            Find your next opportunity and join our growing team
-          </p>
-        </motion.div>
+        <SectionHeading
+          title="Open Positions"
+          description="Find your next opportunity and join our growing team"
+          className="mb-12"
+        />
 
         {/* Search and Filters */}
         <motion.div
@@ -114,7 +106,7 @@ export const JobListings = ({ jobs, onJobClick }: JobListingsProps) => {
               placeholder="Search by title, department, or location..."
               value={filters.search}
               onChange={(e) => setFilters(prev => ({ ...prev, search: e.target.value }))}
-              className="pl-12 py-6 text-lg rounded-full border-[hsl(220_15%_25%)] bg-[hsl(220_20%_10%)] focus:border-primary text-[hsl(40_20%_95%)] placeholder:text-[hsl(40_10%_50%)]"
+              className="pl-12 py-6 text-lg rounded-full border-input bg-card/80 shadow-md focus:border-primary text-foreground placeholder:text-muted-foreground dark:bg-card/30 dark:backdrop-blur-md transition-all duration-300"
             />
           </div>
 
@@ -196,7 +188,7 @@ export const JobListings = ({ jobs, onJobClick }: JobListingsProps) => {
           transition={{ delay: 0.2 }}
         >
           <p className="opacity-70">
-            Showing <span className="font-bold opacity-100">{filteredJobs.length}</span> 
+            Showing <span className="font-bold opacity-100">{filteredJobs.length}</span>
             {filteredJobs.length === 1 ? ' position' : ' positions'}
           </p>
         </motion.div>
@@ -248,27 +240,37 @@ interface JobCardProps {
 const JobCard = ({ job, onClick }: JobCardProps) => {
   return (
     <motion.article
-      className="p-6 rounded-xl border border-[hsl(220_15%_20%)] bg-[hsl(220_20%_10%)] cursor-pointer group transition-all duration-300 hover:border-primary/50"
+      className="p-6 rounded-xl border border-border dark:border-border/50 bg-card/80 dark:bg-card/20 backdrop-blur-sm cursor-pointer group transition-all duration-300 hover:border-primary/50"
       onClick={onClick}
-      whileHover={{ x: 8, boxShadow: '-8px 0 0 hsl(160 70% 45%)' }}
+      whileHover={{ x: 8 }}
       transition={{ duration: 0.2 }}
+      style={{
+        // Dynamic shadow color using the CSS variable
+        boxShadow: "var(--job-card-shadow, 0 0 transparent)"
+      }}
+      onMouseEnter={(e) => {
+        e.currentTarget.style.boxShadow = "-8px 0 0 hsl(var(--primary))";
+      }}
+      onMouseLeave={(e) => {
+        e.currentTarget.style.boxShadow = "none";
+      }}
     >
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div className="flex-1">
           <div className="flex flex-wrap items-center gap-2 mb-2">
-            <Badge className="text-xs bg-[hsl(220_15%_18%)] text-[hsl(40_20%_90%)] border-[hsl(220_15%_25%)]">
+            <Badge className="text-xs bg-muted text-muted-foreground border-border dark:border-border/50">
               {job.department}
             </Badge>
-            <Badge variant="outline" className="text-xs border-[hsl(220_15%_25%)] text-[hsl(40_20%_90%)]">
+            <Badge variant="outline" className="text-xs border-border dark:border-border/50 text-muted-foreground">
               {jobTypeLabels[job.jobType]}
             </Badge>
           </div>
-          
-          <h3 className="text-xl font-display font-bold group-hover:text-primary transition-colors mb-2 text-[hsl(40_20%_95%)]">
+
+          <h3 className="text-xl font-display font-bold group-hover:text-primary transition-colors mb-2 text-card-foreground">
             {job.title}
           </h3>
-          
-          <div className="flex flex-wrap items-center gap-4 text-sm text-[hsl(40_10%_70%)]">
+
+          <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground">
             <span className="flex items-center gap-1">
               <MapPin className="h-4 w-4" />
               {job.location}
@@ -280,8 +282,8 @@ const JobCard = ({ job, onClick }: JobCardProps) => {
             )}
           </div>
         </div>
-        
-        <ChevronRight className="h-6 w-6 text-[hsl(40_10%_50%)] group-hover:text-primary group-hover:translate-x-1 transition-all flex-shrink-0" />
+
+        <ChevronRight className="h-6 w-6 text-muted-foreground group-hover:text-primary group-hover:translate-x-1 transition-all flex-shrink-0" />
       </div>
     </motion.article>
   );

@@ -1,23 +1,27 @@
 import { Section } from '@/types';
-import { StaggerList, StaggerItem } from '@/components/ui/motion';
 import { motion } from 'framer-motion';
-import { 
-  Banknote, 
-  Stethoscope, 
-  Home, 
-  BookOpen, 
-  Plane, 
-  Baby, 
-  HelpCircle 
+import {
+  Banknote,
+  Stethoscope,
+  Home,
+  BookOpen,
+  Plane,
+  Baby,
+  HelpCircle,
+  Flower2,
+  Palmtree
 } from 'lucide-react';
+import { SectionHeading } from '@/components/ui/SectionHeading';
 
 const ICON_MAP: Record<string, any> = {
-  '💰': Banknote,
-  '🏥': Stethoscope,
-  '🏠': Home,
-  '📚': BookOpen,
-  '✈️': Plane,
-  '👶': Baby,
+  'money': Banknote,
+  'health': Stethoscope,
+  'remote': Home,
+  'learning': BookOpen,
+  'travel': Plane,
+  'family': Baby,
+  'wellness': Flower2,
+  'pto': Palmtree,
 };
 
 interface BenefitsSectionProps {
@@ -29,59 +33,49 @@ export const BenefitsSection = ({ section }: BenefitsSectionProps) => {
   const benefits = content.benefits || [];
 
   return (
-    <section className="py-24 hero-gradient relative overflow-hidden">
-      {/* Grid background */}
-      <div className="absolute inset-0 opacity-[0.02]" 
-        style={{ 
-          backgroundImage: 'linear-gradient(hsl(var(--foreground)) 1px, transparent 1px), linear-gradient(90deg, hsl(var(--foreground)) 1px, transparent 1px)',
-          backgroundSize: '40px 40px' 
-        }} 
-      />
-      
-      <div className="section-container relative z-10">
-        <motion.div
-          className="text-center max-w-3xl mx-auto mb-16"
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
-        >
-          <h2 className="text-4xl sm:text-5xl font-display font-bold mb-4">
-            {title}
-          </h2>
-          <p className="text-lg opacity-70">
-            We take care of our team so they can do their best work
-          </p>
-        </motion.div>
+    <section className="py-24 relative overflow-hidden bg-accent/5">
+      {/* Subtle modern background */}
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-primary/5 via-background to-background opacity-50" />
 
-        <StaggerList className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="section-container relative z-10">
+        <SectionHeading
+          title={title}
+          description="We take care of our team so they can do their best work."
+        />
+
+        {/* Centered Vertical List Layout */}
+        <div className="flex flex-col gap-4 max-w-2xl mx-auto">
           {benefits.map((benefit: { icon: string; title: string; description: string }, index: number) => {
             const Icon = ICON_MAP[benefit.icon] || HelpCircle;
+
             return (
-              <StaggerItem key={index}>
-                <motion.div
-                  className="group p-6 rounded-xl bg-[hsl(220_20%_12%/0.8)] backdrop-blur-sm border border-[hsl(220_15%_25%/0.5)] h-full"
-                  whileHover={{ scale: 1.02, borderColor: 'hsl(160 70% 45% / 0.5)' }}
-                  transition={{ duration: 0.2 }}
-                >
-                  <div className="flex items-start gap-4">
-                    <div className="flex-shrink-0 p-3 rounded-xl bg-primary/10 group-hover:bg-primary/20 transition-colors">
-                      <Icon className="w-6 h-6 text-primary" strokeWidth={1.5} />
-                    </div>
-                    <div>
-                      <h3 className="text-lg font-display font-bold mb-2 text-[hsl(40_20%_95%)]">
-                        {benefit.title}
-                      </h3>
-                      <p className="text-[hsl(40_10%_70%)] text-sm leading-relaxed">
-                        {benefit.description}
-                      </p>
-                    </div>
-                  </div>
-                </motion.div>
-              </StaggerItem>
+              <motion.div
+                key={index}
+                className="group flex items-center gap-6 p-4 rounded-2xl border border-border bg-card/80 dark:bg-card/20 backdrop-blur-xl hover:bg-card/50 dark:hover:bg-card/30 transition-all duration-300"
+                initial={{ opacity: 0, x: -20 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5, delay: index * 0.1 }}
+                whileHover={{ x: 4 }}
+              >
+                {/* Icon Container */}
+                <div className="shrink-0 w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center text-primary group-hover:scale-110 group-hover:bg-primary group-hover:text-primary-foreground transition-all duration-300">
+                  <Icon className="w-6 h-6" />
+                </div>
+
+                {/* Text Content */}
+                <div className="flex-1 text-left">
+                  <h3 className="text-lg font-display font-bold text-foreground mb-1">
+                    {benefit.title}
+                  </h3>
+                  <p className="text-sm text-muted-foreground leading-relaxed">
+                    {benefit.description}
+                  </p>
+                </div>
+              </motion.div>
             );
           })}
-        </StaggerList>
+        </div>
       </div>
     </section>
   );

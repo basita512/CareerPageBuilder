@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   BarChart,
@@ -7,34 +8,74 @@ import {
   CartesianGrid,
   Tooltip,
   ResponsiveContainer,
-  LineChart,
-  Line,
 } from "recharts";
-import { Users, Eye, MousePointer2 } from "lucide-react";
-
-const mockOverviewData = {
-  totalPageViews: 1250,
-  totalJobViews: 840,
-  totalApplicationClicks: 156,
-};
-
-const mockChartData = [
-  { name: "Mon", views: 400, clicks: 240 },
-  { name: "Tue", views: 300, clicks: 139 },
-  { name: "Wed", views: 200, clicks: 980 },
-  { name: "Thu", views: 278, clicks: 390 },
-  { name: "Fri", views: 189, clicks: 480 },
-  { name: "Sat", views: 239, clicks: 380 },
-  { name: "Sun", views: 349, clicks: 430 },
-];
-
-const mockTopJobs = [
-  { jobId: "1", title: "Senior Frontend Engineer", views: 450 },
-  { jobId: "2", title: "Product Designer", views: 320 },
-  { jobId: "3", title: "Marketing Manager", views: 180 },
-];
+import { Users, Eye, MousePointer2, Loader2 } from "lucide-react";
+import { analyticsService, AnalyticsOverview, TopJob } from "@/services/analyticsService";
+import { toast } from "sonner";
 
 export function AnalyticsDashboard() {
+  const [overview, setOverview] = useState<AnalyticsOverview>({
+    pageViews: 0,
+    jobViews: 0,
+    applyClicks: 0,
+    conversionRate: 0,
+  });
+  const [topJobs, setTopJobs] = useState<TopJob[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const [overviewRes, topJobsRes] = await Promise.all([
+          analyticsService.getOverview(),
+          analyticsService.getTopJobs(),
+        ]);
+
+        if (overviewRes.success) {
+          setOverview(overviewRes.data);
+        }
+        if (topJobsRes.success) {
+          setTopJobs(topJobsRes.data);
+        }
+      } catch (error) {
+        console.error("Failed to fetch analytics:", error);
+        toast.error("Failed to load analytics data");
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center h-[200px]">
+        <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+      </div>
+    );
+  }
+
+  // Flatten data for chart
+  const chartData = topJobs.map(item => ({
+    title: item.job.title,
+    views: item.views,
+  }));
+
+  const CustomTooltip = ({ active, payload, label }: any) => {
+    if (active && payload && payload.length) {
+      return (
+        <div className="bg-popover border border-border p-3 rounded-lg shadow-lg">
+          <p className="font-semibold text-popover-foreground mb-1">{label}</p>
+          <p className="text-sm text-primary">
+            {payload[0].value} views
+          </p>
+        </div>
+      );
+    }
+    return null;
+  };
+
   return (
     <div className="space-y-6">
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -44,7 +85,7 @@ export function AnalyticsDashboard() {
             <Users className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{mockOverviewData.totalPageViews}</div>
+            <div className="text-2xl font-bold">{overview.pageViews}</div>
           </CardContent>
         </Card>
         <Card>
@@ -53,56 +94,65 @@ export function AnalyticsDashboard() {
             <Eye className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{mockOverviewData.totalJobViews}</div>
+            <div className="text-2xl font-bold">{overview.jobViews}</div>
           </CardContent>
         </Card>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">App Clicks</CardTitle>
+            <CardTitle className="text-sm font-medium">Apply Clicks</CardTitle>
             <MousePointer2 className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{mockOverviewData.totalApplicationClicks}</div>
+            <div className="text-2xl font-bold">{overview.applyClicks}</div>
+            <p className="text-xs text-muted-foreground mt-1">
+              {overview.conversionRate.toFixed(1)}% conversion rate
+            </p>
           </CardContent>
         </Card>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <Card>
-          <CardHeader>
-            <CardTitle>Activity Overview</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="h-[300px] w-full">
-              <ResponsiveContainer width="100%" height="100%">
-                <LineChart data={mockChartData}>
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="name" />
-                  <YAxis />
-                  <Tooltip />
-                  <Line type="monotone" dataKey="views" stroke="#3b82f6" strokeWidth={2} />
-                  <Line type="monotone" dataKey="clicks" stroke="#10b981" strokeWidth={2} />
-                </LineChart>
-              </ResponsiveContainer>
-            </div>
-          </CardContent>
-        </Card>
-
+      <div className="grid grid-cols-1 gap-6">
         <Card>
           <CardHeader>
             <CardTitle>Top Performing Jobs</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="h-[300px] w-full">
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={mockTopJobs}>
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="title" />
-                  <YAxis />
-                  <Tooltip />
-                  <Bar dataKey="views" fill="#3b82f6" radius={[4, 4, 0, 0]} />
-                </BarChart>
-              </ResponsiveContainer>
+              {chartData.length > 0 ? (
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart data={chartData} layout="vertical" margin={{ left: 20 }}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" horizontal={false} vertical={true} />
+                    <XAxis
+                      type="number"
+                      stroke="hsl(var(--muted-foreground))"
+                      fontSize={12}
+                      tickLine={false}
+                      axisLine={false}
+                      allowDecimals={false}
+                    />
+                    <YAxis
+                      dataKey="title"
+                      type="category"
+                      stroke="hsl(var(--muted-foreground))"
+                      fontSize={12}
+                      tickLine={false}
+                      axisLine={false}
+                      width={160}
+                    />
+                    <Tooltip content={<CustomTooltip />} cursor={{ fill: 'hsl(var(--muted) / 0.2)' }} />
+                    <Bar
+                      dataKey="views"
+                      fill="hsl(var(--primary))"
+                      radius={[0, 4, 4, 0]}
+                      maxBarSize={30}
+                    />
+                  </BarChart>
+                </ResponsiveContainer>
+              ) : (
+                <div className="flex items-center justify-center h-full text-muted-foreground">
+                  No data available
+                </div>
+              )}
             </div>
           </CardContent>
         </Card>

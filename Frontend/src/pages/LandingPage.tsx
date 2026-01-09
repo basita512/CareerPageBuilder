@@ -1,54 +1,64 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { 
-  ArrowRight, Sparkles, Palette, BarChart3, Zap, 
-  Eye, Users, Globe, Check, ChevronRight, Building2
+import {
+  ArrowRight, Sparkles, Palette, BarChart3, Zap,
+  Eye, Users, Globe, Check, ChevronRight, Building2, Smartphone
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
-import { ThemeToggle } from '@/components/ThemeToggle';
+import { SectionHeading } from '@/components/ui/SectionHeading';
+import { StickyScroll } from '@/components/ui/sticky-scroll-reveal';
+import { FeatureFrame } from '@/components/ui/FeatureFrame';
 
 const LandingPage = () => {
-  const [hoveredFeature, setHoveredFeature] = useState<number | null>(null);
-
   const features = [
     {
       icon: Palette,
       title: 'Brand Customization',
       description: 'Match your career page to your brand with custom colors, logos, and banners.',
+      image: '/features/customization.png'
     },
     {
       icon: Zap,
       title: 'Section Builder',
       description: 'Drag-and-drop sections like About, Values, Benefits, and Testimonials.',
+      image: '/features/section.png'
     },
     {
       icon: Eye,
       title: 'Live Preview',
       description: 'See changes in real-time before publishing to the world.',
+      image: '/features/preview.png'
     },
     {
       icon: BarChart3,
       title: 'Built-in Analytics',
       description: 'Track page views, job views, and application clicks.',
+      image: '/features/analytics.png'
     },
     {
       icon: Users,
       title: 'Candidate Experience',
       description: 'Mobile-friendly, accessible, and SEO-optimized for maximum reach.',
+      image: '/features/candidateExp.png'
     },
     {
       icon: Globe,
-      title: 'Multi-Company',
-      description: 'Perfect for agencies managing multiple company career pages.',
+      title: 'One-Click Publishing',
+      description: 'Instantly publish your career page to a custom domain or subdomain. No coding required.',
+      image: '/features/publish.png'
     },
   ];
 
   const showcaseCompanies = [
-    { name: 'Acme Corp', slug: 'acme-corp', jobs: 6 },
-    { name: 'TechStart', slug: 'techstart', jobs: 12 },
-    { name: 'Innovate Inc', slug: 'innovate-inc', jobs: 8 },
+    { name: 'TechCorp', slug: 'techcorp', jobs: 3 },
+    { name: 'Green Energy', slug: 'greenenergy', jobs: 2 }
   ];
+
+  // Helper to get the base URL for public pages (uses current frontend origin)
+  const getPublicUrl = (path: string) => {
+    return `${window.location.origin}${path}`;
+  };
 
   return (
     <div className="min-h-screen bg-background overflow-hidden">
@@ -73,14 +83,18 @@ const LandingPage = () => {
               <Link to="/login" className="text-muted-foreground hover:text-foreground transition-colors">
                 Login
               </Link>
-              <ThemeToggle />
+              <Button asChild variant="outline">
+                <Link to="/register">Sign Up</Link>
+              </Button>
               <Button asChild>
                 <Link to="/login">Get Started</Link>
               </Button>
             </div>
 
             <div className="flex items-center gap-2 md:hidden">
-              <ThemeToggle />
+              <Button asChild size="sm" variant="outline">
+                <Link to="/register">Sign Up</Link>
+              </Button>
               <Button asChild size="sm">
                 <Link to="/login">Login</Link>
               </Button>
@@ -90,27 +104,28 @@ const LandingPage = () => {
       </nav>
 
       {/* Hero Section */}
-      <section className="relative min-h-screen flex items-center pt-20">
+      <section className="relative min-h-screen flex items-center pt-20 pb-12 md:pb-20">
         {/* Background effects */}
         <div className="absolute inset-0 hero-gradient" />
-        <div className="absolute top-1/4 left-1/4 w-[600px] h-[600px] bg-glow-gradient opacity-40 blur-3xl" />
-        <div className="absolute bottom-1/4 right-1/4 w-[500px] h-[500px] bg-glow-gradient opacity-30 blur-3xl" />
-        
-        <div className="section-container relative z-10 py-20">
+        <div className="absolute inset-0 bg-grid-pattern opacity-[0.2]" />
+        <div className="absolute top-1/4 left-1/4 w-[300px] md:w-[600px] h-[300px] md:h-[600px] bg-glow-gradient opacity-40 blur-3xl" />
+        <div className="absolute bottom-1/4 right-1/4 w-[250px] md:w-[500px] h-[250px] md:h-[500px] bg-glow-gradient opacity-30 blur-3xl" />
+
+        <div className="section-container relative z-10 py-12 md:py-20">
           <div className="max-w-4xl mx-auto text-center">
             <motion.div
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8 }}
             >
-              <span className="inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium bg-primary/10 text-primary border border-primary/20 mb-8">
-                <Sparkles className="h-4 w-4" />
+              <span className="inline-flex items-center gap-2 px-4 py-2 rounded-full text-xs md:text-sm font-medium bg-primary/10 text-primary border border-primary/20 mb-6 md:mb-8">
+                <Sparkles className="h-3 w-3 md:h-4 md:w-4" />
                 For ATS & Recruitment Platforms
               </span>
             </motion.div>
 
             <motion.h1
-              className="text-5xl sm:text-6xl lg:text-7xl font-display font-bold leading-[1.1] mb-6"
+              className="text-4xl sm:text-6xl text-white lg:text-7xl font-display font-bold leading-[1.1] mb-6"
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.1 }}
@@ -121,12 +136,12 @@ const LandingPage = () => {
             </motion.h1>
 
             <motion.p
-              className="text-xl sm:text-2xl opacity-80 max-w-2xl mx-auto mb-10 leading-relaxed"
+              className="text-base sm:text-xl opacity-80 max-w-2xl mx-auto mb-8 md:mb-10 leading-relaxed text-gray-400"
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.2 }}
             >
-              Help your clients create branded, mobile-friendly career pages that 
+              Help your clients create branded, mobile-friendly career pages that
               attract top talent. No coding required.
             </motion.p>
 
@@ -136,13 +151,13 @@ const LandingPage = () => {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.3 }}
             >
-              <Button size="lg" className="text-lg px-8 py-6 glow" asChild>
-                <Link to="/demo/acme-corp/careers">
+              <Button size="lg" className="text-base md:text-lg px-8 py-6 glow w-full sm:w-auto" asChild>
+                <a href={getPublicUrl('/demo/techcorp/careers')} target="_blank" rel="noopener noreferrer">
                   View Live Demo
                   <ArrowRight className="ml-2 h-5 w-5" />
-                </Link>
+                </a>
               </Button>
-              <Button size="lg" variant="outline" className="text-lg px-8 py-6" asChild>
+              <Button size="lg" variant="outline" className="text-base md:text-lg px-8 py-6 w-full sm:w-auto" asChild>
                 <Link to="/login">
                   Recruiter Login
                 </Link>
@@ -151,7 +166,7 @@ const LandingPage = () => {
           </div>
         </div>
 
-        {/* Floating UI elements */}
+        {/* Floating UI elements - Hidden on mobile, visible on lg */}
         <motion.div
           className="absolute bottom-20 left-10 hidden lg:block"
           animate={{ y: [0, -10, 0] }}
@@ -177,7 +192,9 @@ const LandingPage = () => {
         >
           <div className="p-4 rounded-xl bg-background/90 backdrop-blur-xl border border-border">
             <div className="flex items-center gap-3">
-              <div className="text-3xl">📱</div>
+              <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center">
+                <Smartphone className="h-5 w-5 text-primary" />
+              </div>
               <div>
                 <div className="text-sm font-medium text-foreground">Mobile First</div>
                 <div className="text-xs text-muted-foreground">Responsive design</div>
@@ -188,87 +205,65 @@ const LandingPage = () => {
       </section>
 
       {/* Features Section */}
-      <section id="features" className="py-24 bg-card relative">
+      <section id="features" className="pt-12 md:pt-24 bg-card relative">
         <div className="section-container">
-          <motion.div
-            className="text-center max-w-3xl mx-auto mb-16"
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6 }}
-          >
-            <h2 className="text-4xl sm:text-5xl font-display font-bold mb-4">
-              Everything You Need
-            </h2>
-            <p className="text-lg text-muted-foreground">
-              Powerful tools for recruiters, delightful experience for candidates.
-            </p>
-          </motion.div>
+          <SectionHeading
+            title="Everything You Need"
+            description="Powerful tools for recruiters, delightful experience for candidates."
+            className=""
+          />
 
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {features.map((feature, index) => (
-              <motion.div
-                key={index}
-                className="group p-8 rounded-2xl bg-background border border-border relative overflow-hidden"
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.5, delay: index * 0.1 }}
-                onMouseEnter={() => setHoveredFeature(index)}
-                onMouseLeave={() => setHoveredFeature(null)}
-                whileHover={{ y: -4 }}
-              >
-                {/* Glow effect on hover */}
-                <motion.div
-                  className="absolute inset-0 bg-glow-gradient opacity-0 group-hover:opacity-20 transition-opacity duration-500"
-                />
-                
-                <div className="relative z-10">
-                  <div className="w-14 h-14 rounded-xl bg-primary/10 flex items-center justify-center mb-6 group-hover:bg-primary/20 transition-colors">
-                    <feature.icon className="h-7 w-7 text-primary" />
+          <StickyScroll
+            content={features.map(f => ({
+              title: f.title,
+              description: f.description,
+              content: (
+                <FeatureFrame className="w-full">
+                  <div className="w-full bg-muted/10 relative">
+                    <img
+                      src={f.image}
+                      alt={f.title}
+                      className="w-full h-auto rounded-lg rounded-t-none block"
+                    />
                   </div>
-                  <h3 className="text-xl font-display font-bold mb-3">
-                    {feature.title}
-                  </h3>
-                  <p className="text-muted-foreground">
-                    {feature.description}
-                  </p>
-                </div>
-              </motion.div>
-            ))}
-          </div>
+                </FeatureFrame>
+              )
+            }))}
+            contentClassName="bg-transparent shadow-none"
+          />
         </div>
       </section>
 
       {/* Demo Section */}
-      <section id="demo" className="py-24 bg-background">
+      <section id="demo" className="py-12 md:py-24 bg-background">
         <div className="section-container">
           <motion.div
-            className="text-center max-w-3xl mx-auto mb-16"
+            className="text-center max-w-3xl mx-auto mb-10 md:mb-16"
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6 }}
           >
-            <h2 className="text-4xl sm:text-5xl font-display font-bold mb-4">
-              See It In Action
-            </h2>
-            <p className="text-lg text-muted-foreground">
-              Explore sample career pages built with our platform.
-            </p>
+            <SectionHeading
+              title="See It In Action"
+              description="Explore sample career pages built with our platform."
+            />
           </motion.div>
 
-          <div className="grid md:grid-cols-3 gap-6">
+          <div className="flex flex-wrap justify-center gap-6">
             {showcaseCompanies.map((company, index) => (
               <motion.div
                 key={company.slug}
+                className="w-full md:w-[350px]"
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.5, delay: index * 0.1 }}
               >
-                <Link
-                  to={`/demo/${company.slug}/careers`}
+                <a
+                  href={getPublicUrl(`/demo/${company.slug}/careers`)}
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className="group block p-6 rounded-2xl bg-card border border-border hover:border-primary/50 transition-all"
                 >
                   <div className="flex items-center justify-between mb-4">
@@ -279,7 +274,7 @@ const LandingPage = () => {
                   </div>
                   <h3 className="font-display font-bold text-lg mb-1">{company.name}</h3>
                   <p className="text-sm text-muted-foreground">{company.jobs} open positions</p>
-                </Link>
+                </a>
               </motion.div>
             ))}
           </div>
@@ -287,9 +282,9 @@ const LandingPage = () => {
       </section>
 
       {/* CTA Section */}
-      <section className="py-24 hero-gradient relative overflow-hidden">
+      <section className="py-12 md:py-24 hero-gradient relative overflow-hidden">
         <div className="absolute inset-0 bg-glow-gradient opacity-20" />
-        
+
         <div className="section-container relative z-10">
           <motion.div
             className="max-w-3xl mx-auto text-center"
@@ -298,13 +293,13 @@ const LandingPage = () => {
             viewport={{ once: true }}
             transition={{ duration: 0.6 }}
           >
-            <h2 className="text-4xl sm:text-5xl lg:text-6xl font-display font-bold mb-6">
+            <h2 className="text-3xl sm:text-5xl lg:text-6xl font-display font-bold mb-6">
               Ready to Transform Your Hiring?
             </h2>
-            <p className="text-xl opacity-70 mb-10">
+            <p className="text-lg md:text-xl opacity-70 mb-8 md:mb-10">
               Start building beautiful career pages for your clients today.
             </p>
-            <Button size="lg" className="text-lg px-10 py-6 glow" asChild>
+            <Button size="lg" className="text-base md:text-lg px-10 py-6 glow w-full sm:w-auto" asChild>
               <Link to="/login">
                 Get Started Free
                 <ArrowRight className="ml-2 h-5 w-5" />
@@ -315,7 +310,7 @@ const LandingPage = () => {
       </section>
 
       {/* Footer */}
-      <footer className="py-12 bg-card border-t border-border">
+      <footer className="py-12 bg-accent/5 border-t border-border dark:bg-card/30 dark:backdrop-blur-md">
         <div className="section-container">
           <div className="flex flex-col md:flex-row items-center justify-between gap-6">
             <div className="flex items-center gap-2">
