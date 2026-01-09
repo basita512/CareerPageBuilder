@@ -11,6 +11,7 @@ import { errorHandler } from './middleware/error.middleware';
 import { prisma } from './config/connect_db';
 
 const app = express()
+app.set('trust proxy', 1); // Trust Vercel proxy
 
 // Security middleware (with CSP adjustments for Swagger)
 app.use(helmet({
