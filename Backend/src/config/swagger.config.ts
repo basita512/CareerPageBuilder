@@ -1,4 +1,5 @@
 import swaggerJsdoc from 'swagger-jsdoc';
+import path from 'path';
 import { SwaggerDefinition } from 'swagger-jsdoc';
 const PORT = process.env.PORT;
 
@@ -10,7 +11,7 @@ const swaggerDefinition: SwaggerDefinition = {
         description: 'API documentation for CareerPageBuilder - Create beautiful career pages with job listings, company branding, and analytics',
         contact: {
             name: 'API Support',
-            email: 'support@careerpagebuilder.com',
+            email: 'mail2basita@gmail.com',
         },
     },
     servers: [
@@ -61,8 +62,8 @@ const swaggerDefinition: SwaggerDefinition = {
 const options: swaggerJsdoc.Options = {
     swaggerDefinition,
     apis: [
-        './src/routes/*.ts',
-        './src/controllers/*.ts',
+        path.join(__dirname, '../routes/*.{ts,js}'),
+        path.join(__dirname, '../controllers/*.{ts,js}'),
     ],
 };
 
