@@ -29,8 +29,15 @@ async function main() {
             email: 'careers@techcorp.example.com',
             logoUrl: 'https://via.placeholder.com/200x200/4F46E5/ffffff?text=TechCorp',
             bannerUrl: 'https://via.placeholder.com/1200x400/4F46E5/ffffff?text=TechCorp+Banner',
-            primaryColor: '#4F46E5',
-            secondaryColor: '#818CF8',
+            colors: {
+                primary: "#451952", // Sunset Vibes
+                secondary: "#F59F59",
+                accent: "#AF445A",
+                background: "#1D1A39",
+                surface: "#662549",
+                muted: "#E8BCB9",
+            },
+            themeMode: 'light',
             fontFamily: 'Inter',
             metaTitle: 'Join TechCorp - Build the Future',
             metaDescription: 'Join our team of innovators building cutting-edge software solutions',
@@ -49,8 +56,15 @@ async function main() {
             email: 'jobs@greenenergy.example.com',
             logoUrl: 'https://via.placeholder.com/200x200/10B981/ffffff?text=GreenEnergy',
             bannerUrl: 'https://via.placeholder.com/1200x400/10B981/ffffff?text=GreenEnergy+Banner',
-            primaryColor: '#10B981',
-            secondaryColor: '#34D399',
+            colors: {
+                primary: "#5f7674", // Industrial Earth
+                secondary: "#b94d22",
+                accent: "#3f5252",
+                background: "#293131",
+                surface: "#1e201e",
+                muted: "#afb3b1",
+            },
+            themeMode: 'light',
             fontFamily: 'Roboto',
             metaTitle: 'GreenEnergy Careers - Power the Future',
             metaDescription: 'Help us build a sustainable future with renewable energy solutions',
@@ -343,7 +357,53 @@ async function main() {
         ],
     });
 
-    console.log('✅ Created job postings');
+    // Generate Analytics Data
+    console.log('📊 Generating analytics data...');
+
+    const eventTypes = ['page_view', 'job_view', 'apply_click'];
+    const companies = [techCorp.id, greenEnergy.id];
+    const techCorpJobs = await prisma.job.findMany({ where: { companyId: techCorp.id } });
+    const greenEnergyJobs = await prisma.job.findMany({ where: { companyId: greenEnergy.id } });
+
+    const analyticsData = [];
+
+    // Helper to generate random date within last 30 days
+    const getRandomDate = () => {
+        const date = new Date();
+        date.setDate(date.getDate() - Math.floor(Math.random() * 30));
+        return date;
+    };
+
+    // Generate 500 random events
+    for (let i = 0; i < 500; i++) {
+        const companyId = companies[Math.floor(Math.random() * companies.length)];
+        const eventType = eventTypes[Math.floor(Math.random() * eventTypes.length)];
+        let jobId = null;
+
+        // If job related event, pick a random job from that company
+        if (eventType !== 'page_view') {
+            const jobs = companyId === techCorp.id ? techCorpJobs : greenEnergyJobs;
+            if (jobs.length > 0) {
+                jobId = jobs[Math.floor(Math.random() * jobs.length)].id;
+            }
+        }
+
+        analyticsData.push({
+            companyId,
+            jobId,
+            eventType,
+            userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+            ipAddress: `192.168.${Math.floor(Math.random() * 255)}.${Math.floor(Math.random() * 255)}`,
+            referrer: Math.random() > 0.5 ? 'https://google.com' : 'https://linkedin.com',
+            createdAt: getRandomDate(),
+        });
+    }
+
+    await prisma.analyticsEvent.createMany({
+        data: analyticsData,
+    });
+
+    console.log('✅ Generated 500 analytics events');
 
     console.log('🎉 Seeding completed successfully!');
     console.log('\n📊 Summary:');

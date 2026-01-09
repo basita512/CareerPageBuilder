@@ -21,11 +21,11 @@ model Company {
   email   String?
 
   // Branding
-  logoUrl        String? @map("logo_url")
-  bannerUrl      String? @map("banner_url")
-  primaryColor   String  @default("#3B82F6") @map("primary_color")
-  secondaryColor String  @default("#1E40AF") @map("secondary_color")
-  fontFamily     String  @default("Inter") @map("font_family")
+  logoUrl    String? @map("logo_url")
+  bannerUrl  String? @map("banner_url")
+  colors     Json    @default("{}") @map("colors")
+  fontFamily String  @default("Inter") @map("font_family")
+  themeMode  String  @default("light") @map("theme_mode")
 
   // SEO
   metaTitle       String? @map("meta_title")
@@ -57,6 +57,7 @@ model Section {
 
   type       String
   title      String?
+  subtitle   String?
   orderIndex Int     @default(0) @map("order_index")
   isVisible  Boolean @default(true) @map("is_visible")
 
