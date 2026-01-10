@@ -55,9 +55,10 @@ const LandingPage = () => {
     { name: 'Green Energy', slug: 'greenenergy', jobs: 2 }
   ];
 
-  // Helper to get the base URL for public pages (uses current frontend origin)
+  // Helper to get the base URL for public pages
   const getPublicUrl = (path: string) => {
-    return `${window.location.origin}${path}`;
+    const baseUrl = import.meta.env.VITE_APP_URL || window.location.origin;
+    return `${baseUrl}${path}`;
   };
 
   return (
