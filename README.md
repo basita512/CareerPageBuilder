@@ -4,7 +4,6 @@
 This project is a Career Page Builder platform which helps recruiters and ATS providers to create branded career pages for their clients with personal customization and provides job posting insights with a hassle-free job posting process. 
 
 - **Production Live Link:** [Click Here to view app](https://career-page-builder-fe.vercel.app/)
-- **API documentation:** [Click Here to view API docs](https://career-page-builder-be.vercel.app/api-docs)
 
 ## Features
 
@@ -55,7 +54,12 @@ This project is a Career Page Builder platform which helps recruiters and ATS pr
     npm run dev
     ```
 
-3.  **Frontend Setup**
+3.  **API Documentation (Local)**
+    
+    Once the backend server is running, you can access the full Swagger API documentation at:
+    http://localhost:5000/api-docs
+
+4.  **Frontend Setup**
 
     Open a new terminal and navigate to the frontend directory: 
     ```bash
@@ -77,9 +81,10 @@ The current version is MVP, but we need to optimize it for production. And add s
 
 - **Add Redis Caching:** Adding Redis caching to improve response time and reduce database load.
 - **Edge Caching:** Caching public career page API responses at the Edge (CDN) to ensure sub-second load times globally and reduce database load.
-- **Application Tracking:** Implementing job application management for recruiters and adding referral features
 - **Cursor Pagination:** Implement cursor-based pagination for high-volume endpoints (e.g., Jobs, Analytics) to ensure consistent performance as data grows.
+- **Candidate submission experience:** Autofill by resume feature and detailed candidate application form.
+- **Application Tracking:** Implementing job application management for recruiters and adding referral features
 - **Theme Marketplace:** Developing a library of pre-built templates for different industries (Tech, Healthcare, Retail).
 
 ## Demo Video
-[Link to Demo Video](https://www.youtube.com/watch?v=your-demo-video-id)
+[Link to Demo Video](https://youtu.be/tUtCVLGjLVY)
