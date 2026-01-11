@@ -57,8 +57,7 @@ const LandingPage = () => {
 
   // Helper to get the base URL for public pages
   const getPublicUrl = (path: string) => {
-    const baseUrl = import.meta.env.VITE_APP_URL || window.location.origin;
-    return `${baseUrl}${path}`;
+    return `${window.location.origin}${path}`;
   };
 
   return (
